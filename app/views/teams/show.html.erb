@@ -1,0 +1,61 @@
+<h1><%= @team.name %></h1>
+
+<p>
+  Team page: <%= team_url(@team) %>
+</p>
+
+<h2>API keys</h2>
+<p>
+  Public key: <code><%= @team.public_key %></code>
+</p>
+<% if @team.secret_key.present? %>
+  <p>
+    Secret key (shown once): <code><%= @team.secret_key %></code>
+  </p>
+<% else %>
+  <p>
+    Secret key is only shown on creation.
+  </p>
+<% end %>
+
+<h2>Users</h2>
+<ul>
+  <% @team.team_users.order(:username).each do |user| %>
+    <li>
+      <% if user.profile_pic_url.present? %>
+        <img src="<%= user.profile_pic_url %>" alt="" width="24" height="24" loading="lazy">
+      <% end %>
+      <strong><%= user.username %></strong>
+      — <%= user.current_status || "(no status yet)" %>
+    </li>
+  <% end %>
+</ul>
+
+<h3>Add a user</h3>
+
+<%= form_with model: @team_user, url: team_team_users_path(@team) do |f| %>
+  <% if @team_user.errors.any? %>
+    <div>
+      <h4><%= pluralize(@team_user.errors.count, "error") %> prevented saving</h4>
+      <ul>
+        <% @team_user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :username %><br>
+    <%= f.text_field :username, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :profile_pic_url, "Profile pic URL" %><br>
+    <%= f.url_field :profile_pic_url %>
+  </div>
+
+  <div>
+    <%= f.submit "Add user" %>
+  </div>
+<% end %>

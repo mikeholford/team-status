@@ -1,0 +1,8 @@
+alice:
+  team: one
+  username: alice
+  profile_pic_url: https://example.com/alice.png
+
+bob:
+  team: one
+  username: bob

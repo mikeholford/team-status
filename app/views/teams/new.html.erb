@@ -1,0 +1,23 @@
+<h1>Create a Team</h1>
+
+<%= form_with model: @team, url: teams_path do |f| %>
+  <% if @team.errors.any? %>
+    <div>
+      <h2><%= pluralize(@team.errors.count, "error") %> prevented saving</h2>
+      <ul>
+        <% @team.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name %><br>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= f.submit "Create team" %>
+  </div>
+<% end %>

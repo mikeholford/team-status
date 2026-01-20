@@ -1,0 +1,5 @@
+one:
+  uuid: 11111111-1111-1111-1111-111111111111
+  name: Test Team
+  public_key: public_test_1
+  secret_key_digest: <%= BCrypt::Password.create("secret_test_1") %>

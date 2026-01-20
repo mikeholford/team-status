@@ -1,0 +1,11 @@
+alice_one:
+  team_user: alice
+  team: one
+  status: Deep work
+  created_at: <%= 2.hours.ago %>
+
+alice_two:
+  team_user: alice
+  team: one
+  status: Going for a walk
+  created_at: <%= 1.hour.ago %>
