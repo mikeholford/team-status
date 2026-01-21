@@ -5,6 +5,7 @@ class TeamsController < ApplicationController
 
   def create
     @team = Team.new(team_params)
+    @team.name = "My Team" if @team.name.blank?
 
     if @team.save
       flash[:team_secret_key] = @team.secret_key
