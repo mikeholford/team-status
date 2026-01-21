@@ -44,4 +44,6 @@ end
 
 gem "tailwindcss-rails", "~> 4.4"
 
+gem "rack-attack", "~> 6.7"
+
 gem "dockerfile-rails", ">= 1.7", :group => :development
