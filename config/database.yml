@@ -23,9 +23,12 @@ test:
 production:
   primary:
     <<: *postgres
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *postgres
     migrations_paths: db/cache_migrate
+    url: <%= URI.parse(ENV["DATABASE_URL"]).tap { |url| url.path += "_cache" } if ENV["DATABASE_URL"] %>
   queue:
     <<: *postgres
     migrations_paths: db/queue_migrate
+    url: <%= URI.parse(ENV["DATABASE_URL"]).tap { |url| url.path += "_queue" } if ENV["DATABASE_URL"] %>
