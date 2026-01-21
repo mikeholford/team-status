@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   root "teams#new"
 
   resources :teams, param: :uuid, only: [:new, :create, :show] do
-    resources :team_users, only: [:create]
+    resources :team_users, only: [:create, :show]
   end
 
   namespace :api do

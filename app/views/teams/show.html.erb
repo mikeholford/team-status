@@ -1,61 +1,138 @@
-<h1><%= @team.name %></h1>
+<div class="flex items-center justify-between">
+  <h1 class="text-lg font-semibold tracking-tight">
+    <%= @team.name %>
+  </h1>
 
-<p>
-  Team page: <%= team_url(@team) %>
-</p>
+  <button
+    type="button"
+    class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-sm transition hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-700"
+    aria-label="Add user"
+    onclick="document.getElementById('new-user-dialog').showModal()">
+    +
+  </button>
+</div>
 
-<h2>API keys</h2>
-<p>
-  Public key: <code><%= @team.public_key %></code>
-</p>
-<% if @team.secret_key.present? %>
-  <p>
-    Secret key (shown once): <code><%= @team.secret_key %></code>
-  </p>
-<% else %>
-  <p>
-    Secret key is only shown on creation.
-  </p>
-<% end %>
-
-<h2>Users</h2>
-<ul>
+<div class="mt-5 space-y-2">
   <% @team.team_users.order(:username).each do |user| %>
-    <li>
-      <% if user.profile_pic_url.present? %>
-        <img src="<%= user.profile_pic_url %>" alt="" width="24" height="24" loading="lazy">
-      <% end %>
-      <strong><%= user.username %></strong>
-      — <%= user.current_status || "(no status yet)" %>
-    </li>
-  <% end %>
-</ul>
+    <% current = user.current_status_update %>
+    <% last = user.last_status_update %>
 
-<h3>Add a user</h3>
-
-<%= form_with model: @team_user, url: team_team_users_path(@team) do |f| %>
-  <% if @team_user.errors.any? %>
-    <div>
-      <h4><%= pluralize(@team_user.errors.count, "error") %> prevented saving</h4>
-      <ul>
-        <% @team_user.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
+    <%= link_to team_team_user_path(@team, user), class: "block rounded-xl border border-zinc-900 bg-zinc-950 px-4 py-3 transition hover:bg-zinc-900/40" do %>
+      <div class="flex min-w-0 items-center gap-3">
+        <% if user.profile_pic_url.present? %>
+          <img
+            src="<%= user.profile_pic_url %>"
+            alt=""
+            width="36"
+            height="36"
+            class="h-9 w-9 rounded-full border border-zinc-800 object-cover"
+            loading="lazy">
+        <% else %>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-xs font-medium text-zinc-200">
+            <%= user.username.first.upcase %>
+          </div>
         <% end %>
-      </ul>
-    </div>
+
+        <div class="grid min-w-0 flex-1 grid-cols-[1fr_auto] grid-rows-2 gap-x-3">
+          <div class="truncate text-sm font-medium">
+            <%= user.username %>
+          </div>
+
+          <div></div>
+
+          <% if current.present? %>
+            <div class="truncate text-sm text-zinc-400">
+              <%= current.status %>
+              <% if current.expires_at.present? %>
+                <span class="px-1 text-zinc-600">•</span>
+                <span class="text-zinc-500/80"><%= short_time_left(current.expires_at) %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="truncate text-sm italic text-zinc-500">
+              no status
+            </div>
+          <% end %>
+
+          <div class="self-end text-right text-xs text-zinc-500">
+            <%= short_time_ago(last&.created_at) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   <% end %>
+</div>
 
-  <div>
-    <%= f.label :username %><br>
-    <%= f.text_field :username, required: true %>
+<dialog
+  id="new-user-dialog"
+  class="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-0 text-zinc-100 shadow-2xl">
+  <div class="border-b border-zinc-900 px-5 py-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm font-semibold">Add user</div>
+        <div class="mt-0.5 text-sm text-zinc-400">Add someone to this team.</div>
+      </div>
+      <button
+        type="button"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-800 bg-zinc-950 text-zinc-200 transition hover:bg-zinc-900"
+        aria-label="Close"
+        onclick="document.getElementById('new-user-dialog').close()">
+        ×
+      </button>
+    </div>
   </div>
 
-  <div>
-    <%= f.label :profile_pic_url, "Profile pic URL" %><br>
-    <%= f.url_field :profile_pic_url %>
-  </div>
+  <div class="px-5 py-4">
+    <%= form_with model: @team_user, url: team_team_users_path(@team), class: "space-y-4" do |f| %>
+      <% if @team_user.errors.any? %>
+        <div class="rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm">
+          <div class="font-medium">Couldn’t save</div>
+          <ul class="mt-2 list-disc space-y-1 pl-5 text-red-200">
+            <% @team_user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
-  <div>
-    <%= f.submit "Add user" %>
+      <div class="space-y-2">
+        <%= f.label :username, class: "text-sm text-zinc-300" %>
+        <%= f.text_field :username, required: true, class: "h-10 w-full rounded-md border border-zinc-800 bg-black px-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700" %>
+      </div>
+
+      <div class="space-y-2">
+        <%= f.label :profile_pic_url, "Avatar URL", class: "text-sm text-zinc-300" %>
+        <%= f.url_field :profile_pic_url, class: "h-10 w-full rounded-md border border-zinc-800 bg-black px-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700" %>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button
+          type="button"
+          class="h-10 rounded-md border border-zinc-800 bg-zinc-950 px-4 text-sm text-zinc-200 transition hover:bg-zinc-900"
+          onclick="document.getElementById('new-user-dialog').close()">
+          Cancel
+        </button>
+
+        <%= f.submit "Add", class: "h-10 rounded-md bg-white px-4 text-sm font-medium text-black transition hover:bg-zinc-200" %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</dialog>
+
+<script>
+  (function () {
+    var dialog = document.getElementById('new-user-dialog');
+    if (!dialog) return;
+
+    dialog.addEventListener('click', function (event) {
+      var rect = dialog.getBoundingClientRect();
+      var clickedInDialog =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width;
+
+      if (!clickedInDialog) dialog.close();
+    });
+  })();
+</script>

@@ -17,12 +17,13 @@ module Api
 
       def status_json(user)
         current = user.current_status_update
+        last = user.last_status_update
 
         {
           username: user.username,
           profile_pic_url: user.profile_pic_url,
           status: current&.status,
-          updated_at: current&.created_at
+          updated_at: last&.created_at
         }
       end
     end

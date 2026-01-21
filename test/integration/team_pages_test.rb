@@ -1,12 +1,12 @@
 require "test_helper"
 
 class TeamPagesTest < ActionDispatch::IntegrationTest
-  test "creates a team and shows keys" do
+  test "creates a team and shows the team page" do
     post teams_path, params: { team: { name: "My Team" } }
 
     assert_response :created
-    assert_includes response.body, "Public key"
-    assert_includes response.body, "Secret key"
+    assert_includes response.body, "My Team"
+    assert_includes response.body, "Add user"
   end
 
   test "shows team page by uuid" do

@@ -8,7 +8,14 @@ class TeamUser < ApplicationRecord
     current_status_update&.status
   end
 
-  def current_status_update
+  def last_status_update
     status_updates.order(created_at: :desc).first
+  end
+
+  def current_status_update
+    last = last_status_update
+    return if last&.expired?
+
+    last
   end
 end
