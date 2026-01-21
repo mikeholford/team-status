@@ -7,8 +7,8 @@ class TeamsController < ApplicationController
     @team = Team.new(team_params)
 
     if @team.save
-      @team_user = @team.team_users.new
-      render :show, status: :created
+      flash[:team_secret_key] = @team.secret_key
+      redirect_to team_path(@team), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
