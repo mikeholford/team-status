@@ -47,7 +47,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_064400) do
 
   add_foreign_key "status_updates", "team_users"
   add_foreign_key "status_updates", "teams"
-  add_foreign_key "status_updates", "teams"
-  add_foreign_key "team_users", "teams"
   add_foreign_key "team_users", "teams"
 end
